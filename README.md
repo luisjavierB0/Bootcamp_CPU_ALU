@@ -1,42 +1,41 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
+# Tiny8 Autonomous CPU with External SPI Instruction Fetch
 
-# Tiny Tapeout Verilog Project Template
+This project implements a compact 8-bit autonomous CPU in Verilog for Tiny Tapeout.
 
-- [Read the documentation for project](docs/info.md)
+## Main idea
+Instead of storing the program inside the chip, the CPU fetches 16-bit instructions from an external SPI instruction source. This keeps the design autonomous while reducing internal area.
 
-## What is Tiny Tapeout?
+## Main features
+- 8-bit accumulator-based CPU
+- external SPI instruction fetch
+- arithmetic and logic operations:
+  - ADD
+  - SUB
+  - AND
+  - OR
+  - XOR
+- control instructions:
+  - CMP
+  - OUT
+  - JMP
+  - BZ
+  - BNZ
+  - HALT
+- final validated constrained floorplan: 155 x 95 um
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+## Current I/O usage
+- `uo[7:0]`: parallel output result
+- `uio[0]`: SPI_CS_N
+- `uio[1]`: SPI_SCK
+- `uio[2]`: SPI_MOSI
+- `uio[3]`: SPI_MISO
 
-To learn more and get started, visit https://tinytapeout.com.
+## Validation status
+- RTL simulation: OK
+- external SPI fetch testbench: OK
+- LibreLane flow: completed
+- DRC/LVS/antenna: clean in final validated flow
+- final constrained layout fits within a 1x1 Tiny Tapeout target envelope
 
-## Set up your Verilog project
-
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
-
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
-
-## Enable GitHub actions to build the results page
-
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
-
-## Resources
-
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
-
-## What next?
-
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+## Note
+This project is presented as an extended architectural interpretation of the original ALU challenge: the required ALU operations are executed under CPU control from an external instruction program, rather than through a direct manual operand-loading interface.
