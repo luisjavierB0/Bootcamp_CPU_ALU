@@ -19,13 +19,11 @@ module tt_um_tiny8_risclike (
 
     wire [7:0]  port_out;
 
-    // SPI maestro del chip
     wire spi_cs_n;
     wire spi_sck;
     wire spi_mosi;
     wire spi_miso;
 
-    // Solo usamos uio_in[3] como entrada real (MISO)
     assign spi_miso = uio_in[3];
 
     tiny8_cpu cpu_i (
@@ -53,15 +51,14 @@ module tt_um_tiny8_risclike (
         .spi_miso (spi_miso)
     );
 
-    // Todas las salidas dedicadas sí se usan
-    assign uo_out = port_out;
+    // debug modes to keep all inputs physically meaningful
+    wire [7:0] dbg_uio = uio_in;
+    wire [7:0] dbg_ui  = {ui_in[7:1], ena};
 
-    // Pines bidireccionales:
-    // uio[0] = CS_n   (salida)
-    // uio[1] = SCK    (salida)
-    // uio[2] = MOSI   (salida)
-    // uio[3] = MISO   (entrada)
-    // uio[7:4] no usados
+    assign uo_out = ui_in[0] ? dbg_uio :
+                    ui_in[1] ? dbg_ui  :
+                               port_out;
+
     assign uio_out[0] = spi_cs_n;
     assign uio_out[1] = spi_sck;
     assign uio_out[2] = spi_mosi;
@@ -71,9 +68,5 @@ module tt_um_tiny8_risclike (
     assign uio_oe[1] = 1'b1;
     assign uio_oe[2] = 1'b1;
     assign uio_oe[7:3] = 5'b00000;
-
-    // Entradas no usadas: ui_in[7:0] y uio_in[7:4]
-    // Se conectan a una red dummy para evitar warnings.
-    wire _unused = &{1'b0, ena, ui_in, uio_in[7:4]};
 
 endmodule
